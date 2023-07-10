@@ -15,7 +15,6 @@ export class LessonService {
 
   async getLesson(id: string): Promise<Lesson> {
     try {
-      console.log('std', id);
       return this.lessonRepository.findOne({ where: { id } });
     } catch (err) {
       console.log('err', err);
