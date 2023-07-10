@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from './student.entity';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { StudentInput } from './student.input';
 import { v4 } from 'uuid';
 
@@ -25,5 +25,18 @@ export class StudentService {
       lastName,
     });
     return await this.studentRepository.save(student);
+  }
+
+  async getManyStudents(studentIds: string[]): Promise<Student[]> {
+    console.log('getMana', studentIds);
+    try {
+      return await this.studentRepository.find({
+        where: {
+          id: In(studentIds),
+        },
+      });
+    } catch (err) {
+      console.log('sdsd', err);
+    }
   }
 }
