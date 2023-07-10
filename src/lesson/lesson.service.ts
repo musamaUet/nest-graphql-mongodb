@@ -5,6 +5,7 @@ import { Lesson } from './lesson.entity';
 import { CreateLesson } from './dto/createLesson.dto';
 import { v4 } from 'uuid';
 import { CreateLessonInput } from './lesson.input';
+import { AssignStudentsToLessonInput } from './assign-students-to-lesson.input';
 
 @Injectable()
 export class LessonService {
@@ -13,7 +14,12 @@ export class LessonService {
   ) {}
 
   async getLesson(id: string): Promise<Lesson> {
-    return this.lessonRepository.findOne({ where: { id } });
+    try {
+      console.log('std', id);
+      return this.lessonRepository.findOne({ where: { id } });
+    } catch (err) {
+      console.log('err', err);
+    }
   }
 
   async getLessons(): Promise<Lesson[]> {
@@ -31,5 +37,27 @@ export class LessonService {
     });
 
     return await this.lessonRepository.save(lesson);
+  }
+
+  async assignStudentsToLesson(
+    assignStudentsToLesson: AssignStudentsToLessonInput,
+  ): Promise<Lesson> {
+    try {
+      const { lessonId, studentIds } = assignStudentsToLesson;
+      console.log('ssss', assignStudentsToLesson);
+      const lesson = await this.lessonRepository.findOne({
+        where: { id: lessonId },
+      });
+
+      console.log('lesson', lesson);
+
+      if (lesson.students)
+        lesson.students = [...lesson.students, ...studentIds];
+      else lesson.students = studentIds;
+
+      return await this.lessonRepository.save(lesson);
+    } catch (err) {
+      console.log('err', err);
+    }
   }
 }
